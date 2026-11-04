@@ -1,0 +1,48 @@
+{
+  "completed_at": "2026-11-04T12:23:41.760790300+00:00",
+  "duration_ms": 1499,
+  "run_id": "0e7e3dfa-0203-40e2-9644-a14f2951c36e",
+  "started_at": "2026-11-04T12:23:40.261765600+00:00",
+  "status": "COMPLETED",
+  "suite_mode": "smoke_test",
+  "summary": {
+    "blocked": 0,
+    "failed": 0,
+    "findings_generated": 0,
+    "not_implemented": 0,
+    "passed": 1,
+    "skipped": 0,
+    "strictly_isolated_db": true,
+    "total_executed": 1
+  },
+  "test_cases": [
+    {
+      "actual_json": "{\"health\":{\"database\":\"SQLite (WAL Mode - Operational)\",\"disclaimer\":\"RESEARCH & ACADEMIC PROTOTYPE ONLY - SYNTHETIC DATA - NOT FOR PRODUCTION LENDING\",\"engine\":\"Rust (Axum + Tokio + SQLx)\",\"ports\":{\"backend\":8240,\"frontend\":3240,\"ml_service\":8241},\"service\":\"AI Credit Risk Research & Dynamic Monitoring Platform\",\"status\":\"HEALTHY\",\"timestamp\":\"2026-11-04T12:23:41.741575+00:00\"},\"health_http\":200,\"overview_metrics\":{\"active_monitoring_alerts\":0,\"default_rate_pct\":12.0,\"total_assessments\":0,\"total_datasets\":1,\"total_synthetic_customers\":50,\"total_transactions\":3175}}",
+      "api_metadata_json": "{\"health_status\":200,\"overview_status\":200}",
+      "assertion_text": "assert status == 200 && health.status == 'HEALTHY' && overview.metrics.total_synthetic_customers == 50",
+      "commit_sha": "workspace-20261104-uncommitted",
+      "completed_at": "2026-11-04T12:23:41.754050100+00:00",
+      "db_evidence_json": null,
+      "description": "Verifies GET /api/health and GET /api/overview return HTTP 200 with operational SQLite connectivity and 50 seeded synthetic customers.",
+      "duration_ms": 16,
+      "environment_json": "{\"arch\":\"x86_64\",\"isolated_qa_db\":\"data/qa_audit.db\",\"ml_service_url\":\"http://127.0.0.1:8241\",\"os\":\"windows\",\"rust_pkg_version\":\"0.1.0\",\"synthetic_only\":true,\"temp_db_dir\":\"data/qa_temp\"}",
+      "error_trace": null,
+      "expected_json": "{\"health_status\":\"HEALTHY\",\"total_synthetic_customers\":50}",
+      "id": "8ed67c86-8fdc-4462-bdaa-250524a78a8c",
+      "input_json": "{\"endpoints\":[\"GET /api/health\",\"GET /api/overview\"]}",
+      "is_synthetic": 1,
+      "logs": "Verified Rust Axum router health & overview endpoints.",
+      "module_id": "M12",
+      "module_name": "System Settings & Diagnostics",
+      "preconditions": "Isolated SQLite database seeded with N=50 baseline customers.",
+      "run_id": "0e7e3dfa-0203-40e2-9644-a14f2951c36e",
+      "screenshot_path": null,
+      "source_refs": "backend/src/api/system.rs:24-114",
+      "started_at": "2026-11-04T12:23:41.737324700+00:00",
+      "status": "PASS",
+      "suite_mode": "smoke_test",
+      "test_id": "SMOKE-001",
+      "title": "Rust Backend Health & Overview Readiness Smoke Check"
+    }
+  ]
+}

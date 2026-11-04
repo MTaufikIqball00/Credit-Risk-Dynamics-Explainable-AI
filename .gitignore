@@ -1,0 +1,45 @@
+# Rust
+target/
+**/target/
+**/*.rs.bk
+
+# Node / Frontend
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+**/dist/
+frontend/dist/
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+**/.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.venv/
+env/
+venv/
+
+# Runtime Logs & PIDs
+*.log
+.pids
+
+# SQLite temporary files and ephemeral QA databases
+*.db-wal
+*.db-shm
+*.db-journal
+backend/data/qa_temp/
+data/qa_temp/
+**/qa_temp/
+
+# OS files
+.DS_Store
+Thumbs.db

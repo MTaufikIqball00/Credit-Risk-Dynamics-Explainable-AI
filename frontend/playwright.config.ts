@@ -1,0 +1,25 @@
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './e2e',
+  fullyParallel: false,
+  forbidOnly: !!process.env.CI,
+  retries: 0,
+  workers: 1,
+  reporter: [
+    ['list'],
+    ['json', { outputFile: 'e2e-results.json' }],
+  ],
+  use: {
+    baseURL: 'http://127.0.0.1:3240',
+    trace: 'off',
+    screenshot: 'only-on-failure',
+    headless: true,
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+    },
+  ],
+});

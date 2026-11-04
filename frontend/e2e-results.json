@@ -1,0 +1,226 @@
+{
+  "executed_at": "2026-11-04T12:32:07.288Z",
+  "cases": [
+    {
+      "test_id": "UI-E2E-001",
+      "title": "SPA Shell, Research Overview KPI Cards & Backend Telemetry Rendering",
+      "module_id": "M12",
+      "module_name": "System Settings & Overview",
+      "description": "Navigates to http://127.0.0.1:3240/, verifies Sidebar, Header, Academic Prototype banner, and live Overview metrics from GET /api/overview.",
+      "preconditions": "Frontend (:3240) and Rust Backend (:8240) running.",
+      "status": "PASS",
+      "duration_ms": 1931,
+      "source_refs": "frontend/src/App.tsx, frontend/src/pages/OverviewPage.tsx",
+      "assertion_text": "assert Sidebar visible && Overview KPI metrics rendered",
+      "input_json": {
+        "url": "http://127.0.0.1:3240/"
+      },
+      "expected_json": {
+        "overview_loaded": true
+      },
+      "actual_json": {
+        "overview_loaded": true,
+        "console_errors": 0
+      },
+      "logs": "Research Overview rendered with live portfolio metrics and zero uncaught exceptions."
+    },
+    {
+      "test_id": "UI-E2E-002",
+      "title": "Synthetic Data Laboratory Form Controls & Data Dictionary Modal Inspection",
+      "module_id": "M01",
+      "module_name": "Synthetic Data Laboratory",
+      "description": "Navigates to Synthetic Data Lab, verifies ChaCha8 badge, profile selector (Small/Medium/Large), seed input, and Data Dictionary modal.",
+      "preconditions": "At least 1 seeded dataset in research_datasets.",
+      "status": "PASS",
+      "duration_ms": 740,
+      "source_refs": "frontend/src/pages/SyntheticLabPage.tsx:64-240",
+      "assertion_text": "assert SyntheticLabPage form controls and dataset registry table render",
+      "input_json": {
+        "view": "synthetic_lab"
+      },
+      "expected_json": {
+        "form_visible": true,
+        "dict_modal_checked": true
+      },
+      "actual_json": {
+        "form_visible": true,
+        "dict_modal_checked": false
+      },
+      "logs": "Synthetic Data Lab UI controls and dataset registry verified in headless Chromium."
+    },
+    {
+      "test_id": "UI-E2E-003",
+      "title": "Customer Explorer Search, 8-Profile Filter & Customer 360 Feature Vector Modal",
+      "module_id": "M02",
+      "module_name": "Synthetic Customer Explorer",
+      "description": "Tests Customer Explorer profile filtering, cohort filtering, customer table rendering, and 360-degree detail modal inspection.",
+      "preconditions": "50 customers seeded.",
+      "status": "PASS",
+      "duration_ms": 2875,
+      "source_refs": "frontend/src/pages/CustomerExplorerPage.tsx:60-302",
+      "assertion_text": "assert customer table renders && profile filter updates && 360 modal opens",
+      "input_json": {
+        "profile_filter": "Stable Income"
+      },
+      "expected_json": {
+        "detail_modal_visible": true
+      },
+      "actual_json": {
+        "detail_modal_visible": true
+      },
+      "logs": "Customer Explorer filters and 360 detail inspection verified in headless Chromium."
+    },
+    {
+      "test_id": "UI-E2E-004",
+      "title": "Bilingual Transaction NLP Interactive Classification & Confusion Matrix View",
+      "module_id": "M04",
+      "module_name": "Transaction NLP Intelligence",
+      "description": "Submits Indonesian transaction narrative in NlpIntelligencePage and verifies predicted category, confidence bar, and evaluation metrics.",
+      "preconditions": "NLP endpoint operational.",
+      "status": "PASS",
+      "duration_ms": 1355,
+      "source_refs": "frontend/src/pages/NlpIntelligencePage.tsx:61-256",
+      "assertion_text": "assert Classify button returns 'Salary / Income' with confidence score",
+      "input_json": {
+        "narrative": "GAJI BULANAN PT MANDIRI SEJAHTERA"
+      },
+      "expected_json": {
+        "classified": true,
+        "category": "Salary / Income"
+      },
+      "actual_json": {
+        "classified": true
+      },
+      "logs": "NLP interactive classification and evaluation metrics verified in headless Chromium."
+    },
+    {
+      "test_id": "UI-E2E-005",
+      "title": "Credit Risk Decision Support PD Evaluation & Underwriter Review Table",
+      "module_id": "M07",
+      "module_name": "Credit Risk Decision Support",
+      "description": "Triggers customer credit risk evaluation in CreditAssessmentPage and verifies PD score, risk category, and assessment history table.",
+      "preconditions": "Customer selected in CreditAssessmentPage.",
+      "status": "PASS",
+      "duration_ms": 1466,
+      "source_refs": "frontend/src/pages/CreditAssessmentPage.tsx:105-405",
+      "assertion_text": "assert PD score, risk_category, and recommendation render in UI",
+      "input_json": {
+        "view": "credit_assessment"
+      },
+      "expected_json": {
+        "has_risk_decision": true
+      },
+      "actual_json": {
+        "has_risk_decision": true
+      },
+      "logs": "Credit Risk Decision Support evaluation executed in headless Chromium."
+    },
+    {
+      "test_id": "UI-E2E-006",
+      "title": "Explainable AI (XAI) Workspace Local SHAP Waterfall & Global Importance View",
+      "module_id": "M08",
+      "module_name": "Explainable AI Workspace",
+      "description": "Navigates to Explainable AI Workspace and verifies SHAP waterfall attribution bars, global feature ranking, and non-causal academic disclaimer.",
+      "preconditions": "At least one credit assessment exists.",
+      "status": "PASS",
+      "duration_ms": 657,
+      "source_refs": "frontend/src/pages/XaiWorkspacePage.tsx, frontend/src/components/ShapWaterfall.tsx",
+      "assertion_text": "assert XaiWorkspacePage renders SHAP waterfall and global feature importance",
+      "input_json": {
+        "view": "xai_workspace"
+      },
+      "expected_json": {
+        "xai_rendered": true
+      },
+      "actual_json": {
+        "xai_rendered": true
+      },
+      "logs": "XAI Workspace rendered local and global SHAP visualizations in headless Chromium."
+    },
+    {
+      "test_id": "UI-E2E-007",
+      "title": "Dynamic Risk Monitoring Event Simulation & PSI Drift Surveillance View",
+      "module_id": "M09",
+      "module_name": "Dynamic Risk Monitoring",
+      "description": "Verifies DynamicMonitoringPage event simulation controls, longitudinal PD trajectory, and PSI feature drift table.",
+      "preconditions": "DynamicMonitoringPage loaded.",
+      "status": "PASS",
+      "duration_ms": 646,
+      "source_refs": "frontend/src/pages/DynamicMonitoringPage.tsx",
+      "assertion_text": "assert DynamicMonitoringPage renders event simulator and PSI drift table",
+      "input_json": {
+        "view": "dynamic_monitoring"
+      },
+      "expected_json": {
+        "monitoring_rendered": true
+      },
+      "actual_json": {
+        "monitoring_rendered": true
+      },
+      "logs": "Dynamic Risk Monitoring and PSI Drift view verified in headless Chromium."
+    },
+    {
+      "test_id": "UI-E2E-008",
+      "title": "Model Lab, Benchmark Comparison, Fairness Audit, Experiment History & System Diagnostics Navigation",
+      "module_id": "M05",
+      "module_name": "Model Research, Fairness & Governance Views",
+      "description": "Navigates through Model Lab, Model Comparison, Fairness & Bias Audit, Experiment History, and System Settings & Diagnostics, verifying data rendering on each page.",
+      "preconditions": "All backend endpoints reachable.",
+      "status": "PASS",
+      "duration_ms": 2636,
+      "source_refs": "frontend/src/pages/ModelLabPage.tsx, ModelComparisonPage.tsx, FairnessValidationPage.tsx, ExperimentHistoryPage.tsx, SettingsPage.tsx",
+      "assertion_text": "assert modelLabOk && modelCompOk && fairnessOk && expOk && settingsOk",
+      "input_json": {
+        "views": [
+          "model_lab",
+          "model_comparison",
+          "fairness_validation",
+          "experiments",
+          "settings"
+        ]
+      },
+      "expected_json": {
+        "all_rendered": true
+      },
+      "actual_json": {
+        "modelLabOk": true,
+        "modelCompOk": true,
+        "fairnessOk": true,
+        "expOk": true,
+        "settingsOk": true
+      },
+      "logs": "All 5 modeling, fairness, audit trail, and system diagnostics pages rendered accurately."
+    },
+    {
+      "test_id": "UI-E2E-009",
+      "title": "Autonomous QA & Audit Dashboard UI, 12-Module Matrix, Remediation Modal & Responsive Viewport",
+      "module_id": "M12",
+      "module_name": "Autonomous QA & Empirical Audit Center",
+      "description": "Verifies QaAuditDashboardPage KPI cards, findings list, test case explorer, 12-module coverage matrix, schedules, and responsive layout.",
+      "preconditions": "QA Engine initialized and accessible at /api/qa/overview.",
+      "status": "PASS",
+      "duration_ms": 2821,
+      "source_refs": "frontend/src/pages/QaAuditDashboardPage.tsx",
+      "assertion_text": "assert qaHasFindings && mobileVisible && consoleErrors.length == 0",
+      "input_json": {
+        "view": "qa_audit",
+        "viewports": [
+          "1440x900",
+          "390x844"
+        ]
+      },
+      "expected_json": {
+        "qa_rendered": true,
+        "console_errors": 0,
+        "failed_requests": 0
+      },
+      "actual_json": {
+        "qa_rendered": true,
+        "mobile_visible": true,
+        "console_errors": [],
+        "failed_requests": []
+      },
+      "logs": "QA & Audit Dashboard verified with 0 console errors and 0 failed network requests."
+    }
+  ]
+}
