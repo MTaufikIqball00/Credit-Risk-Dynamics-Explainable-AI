@@ -235,22 +235,15 @@ async fn call_router(
         .body(Body::from(body_bytes))
         .unwrap();
 
-    match router.oneshot(req).await {
-        Ok(resp) => {
-            let status = resp.status();
-            let bytes = axum::body::to_bytes(resp.into_body(), 4 * 1024 * 1024)
-                .await
-                .unwrap_or_default();
-            let val = serde_json::from_slice::<Value>(&bytes).unwrap_or_else(|_| {
-                json!({ "raw_text": String::from_utf8_lossy(&bytes).to_string() })
-            });
-            (status, val)
-        }
-        Err(e) => (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            json!({ "router_error": e.to_string() }),
-        ),
-    }
+    let Ok(resp) = router.oneshot(req).await;
+    let status = resp.status();
+    let bytes = axum::body::to_bytes(resp.into_body(), 4 * 1024 * 1024)
+        .await
+        .unwrap_or_default();
+    let val = serde_json::from_slice::<Value>(&bytes).unwrap_or_else(|_| {
+        json!({ "raw_text": String::from_utf8_lossy(&bytes).to_string() })
+    });
+    (status, val)
 }
 
 #[allow(clippy::too_many_arguments)]
