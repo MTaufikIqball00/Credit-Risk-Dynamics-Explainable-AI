@@ -11,17 +11,34 @@ pub mod system;
 pub mod transactions;
 pub mod xai;
 
+use axum::http::{header, HeaderValue, Method};
 use axum::routing::{get, post};
 use axum::Router;
 use std::sync::Arc;
 use system::AppState;
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::{AllowOrigin, CorsLayer};
 
 pub fn build_router(state: Arc<AppState>) -> Router {
+    let allowed_origins: Vec<HeaderValue> = state
+        .config
+        .cors_allowed_origins
+        .iter()
+        .filter_map(|origin| HeaderValue::from_str(origin).ok())
+        .collect();
+
+    let origins = if allowed_origins.is_empty() {
+        vec![
+            HeaderValue::from_static("http://localhost:3240"),
+            HeaderValue::from_static("http://127.0.0.1:3240"),
+        ]
+    } else {
+        allowed_origins
+    };
+
     let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods(Any)
-        .allow_headers(Any);
+        .allow_origin(AllowOrigin::list(origins))
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::OPTIONS])
+        .allow_headers([header::CONTENT_TYPE, header::AUTHORIZATION, header::ACCEPT]);
 
     Router::new()
         // System & Overview

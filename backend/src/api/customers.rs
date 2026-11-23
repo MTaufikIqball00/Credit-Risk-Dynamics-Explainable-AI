@@ -9,6 +9,7 @@ use axum::response::IntoResponse;
 use axum::Json;
 use serde::Deserialize;
 use serde_json::json;
+use sqlx::{QueryBuilder, Sqlite};
 use std::sync::Arc;
 
 #[derive(Debug, Deserialize)]
@@ -20,6 +21,29 @@ pub struct CustomerListQuery {
     pub search: Option<String>,
 }
 
+fn apply_customer_filters<'a>(qb: &mut QueryBuilder<'a, Sqlite>, query: &'a CustomerListQuery) {
+    if let Some(ref prof) = query.profile {
+        if !prof.is_empty() && prof != "ALL" {
+            qb.push(" AND simulation_profile = ").push_bind(prof);
+        }
+    }
+    if let Some(ref coh) = query.cohort {
+        if !coh.is_empty() && coh != "ALL" {
+            qb.push(" AND synthetic_cohort = ").push_bind(coh);
+        }
+    }
+    if let Some(ref s) = query.search {
+        if !s.is_empty() {
+            let pattern = format!("%{}%", s);
+            qb.push(" AND (customer_code LIKE ")
+                .push_bind(pattern.clone())
+                .push(" OR employment_type LIKE ")
+                .push_bind(pattern)
+                .push(")");
+        }
+    }
+}
+
 pub async fn list_customers(
     Query(query): Query<CustomerListQuery>,
     State(state): State<Arc<AppState>>,
@@ -28,44 +52,27 @@ pub async fn list_customers(
     let limit = query.limit.unwrap_or(20).clamp(1, 100);
     let offset = (page - 1) * limit;
 
-    let mut sql = "SELECT * FROM synthetic_customers WHERE 1=1".to_string();
-    if let Some(ref prof) = query.profile {
-        if !prof.is_empty() && prof != "ALL" {
-            sql.push_str(&format!(
-                " AND simulation_profile = '{}'",
-                prof.replace('\'', "''")
-            ));
-        }
-    }
-    if let Some(ref coh) = query.cohort {
-        if !coh.is_empty() && coh != "ALL" {
-            sql.push_str(&format!(
-                " AND synthetic_cohort = '{}'",
-                coh.replace('\'', "''")
-            ));
-        }
-    }
-    if let Some(ref s) = query.search {
-        if !s.is_empty() {
-            sql.push_str(&format!(
-                " AND (customer_code LIKE '%{}%' OR employment_type LIKE '%{}%')",
-                s.replace('\'', "''"),
-                s.replace('\'', "''")
-            ));
-        }
-    }
+    let mut select_qb: QueryBuilder<Sqlite> =
+        QueryBuilder::new("SELECT * FROM synthetic_customers WHERE 1=1");
+    apply_customer_filters(&mut select_qb, &query);
+    select_qb
+        .push(" ORDER BY customer_code ASC LIMIT ")
+        .push_bind(limit)
+        .push(" OFFSET ")
+        .push_bind(offset);
 
-    sql.push_str(&format!(
-        " ORDER BY customer_code ASC LIMIT {} OFFSET {}",
-        limit, offset
-    ));
-
-    let customers: Vec<SyntheticCustomer> = sqlx::query_as(&sql)
+    let customers: Vec<SyntheticCustomer> = select_qb
+        .build_query_as::<SyntheticCustomer>()
         .fetch_all(&state.pool)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    let count_tuple: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM synthetic_customers")
+    let mut count_qb: QueryBuilder<Sqlite> =
+        QueryBuilder::new("SELECT COUNT(*) FROM synthetic_customers WHERE 1=1");
+    apply_customer_filters(&mut count_qb, &query);
+
+    let count_tuple: (i64,) = count_qb
+        .build_query_as::<(i64,)>()
         .fetch_one(&state.pool)
         .await
         .unwrap_or((0,));
@@ -99,11 +106,13 @@ pub async fn get_customer_detail(
             .await
             .unwrap_or_default();
 
-    let transactions: Vec<BankTransaction> = sqlx::query_as("SELECT * FROM bank_transactions WHERE customer_id = ? ORDER BY transaction_date DESC LIMIT 100")
-        .bind(&customer_id)
-        .fetch_all(&state.pool)
-        .await
-        .unwrap_or_default();
+    let transactions: Vec<BankTransaction> = sqlx::query_as(
+        "SELECT * FROM bank_transactions WHERE customer_id = ? ORDER BY transaction_date DESC LIMIT 100",
+    )
+    .bind(&customer_id)
+    .fetch_all(&state.pool)
+    .await
+    .unwrap_or_default();
 
     let utilities: Vec<UtilityPayment> = sqlx::query_as(
         "SELECT * FROM utility_payments WHERE customer_id = ? ORDER BY due_date DESC",

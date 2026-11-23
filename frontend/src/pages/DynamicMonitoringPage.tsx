@@ -221,6 +221,72 @@ export const DynamicMonitoringPage: React.FC = () => {
             Customer Risk Score Timeline & Reassessments
           </h3>
 
+          {/* Longitudinal PD Trajectory SVG Chart */}
+          {timelineData?.assessment_timeline?.length > 0 && (
+            <div className="mb-4" data-testid="pd-trajectory-chart">
+              <svg viewBox="0 0 560 175" className="w-full h-44 bg-slate-950 rounded-lg border border-slate-800">
+                {/* Risk tier threshold bands: 12%, 35%, 65% */}
+                <rect x={44} y={150 - 0.12 * 130} width={496} height={0.12 * 130} fill="#10b981" fillOpacity="0.08" />
+                <rect x={44} y={150 - 0.35 * 130} width={496} height={0.23 * 130} fill="#f59e0b" fillOpacity="0.06" />
+                <rect x={44} y={150 - 0.65 * 130} width={496} height={0.3 * 130} fill="#f43f5e" fillOpacity="0.06" />
+                {[0.12, 0.35, 0.65].map((th) => (
+                  <g key={th}>
+                    <line
+                      x1={44}
+                      y1={150 - th * 130}
+                      x2={540}
+                      y2={150 - th * 130}
+                      stroke="#334155"
+                      strokeDasharray="3 3"
+                      strokeWidth="1"
+                    />
+                    <text x={38} y={153 - th * 130} textAnchor="end" fill="#64748b" fontSize="9" fontFamily="monospace">
+                      {Math.round(th * 100)}%
+                    </text>
+                  </g>
+                ))}
+                <line x1={44} y1={20} x2={44} y2={150} stroke="#475569" strokeWidth="1" />
+                <line x1={44} y1={150} x2={540} y2={150} stroke="#475569" strokeWidth="1" />
+                {(() => {
+                  const pts = timelineData.assessment_timeline;
+                  const n = pts.length;
+                  const coords = pts.map((item: any, idx: number) => {
+                    const x = n === 1 ? 290 : 60 + (idx / (n - 1)) * 460;
+                    const pd = Math.max(0, Math.min(1, Number(item.probability_of_default) || 0));
+                    const y = 150 - pd * 130;
+                    return { x, y, pd, idx };
+                  });
+                  const poly = coords.map((c: any) => `${c.x},${c.y}`).join(' ');
+                  return (
+                    <g>
+                      {coords.length > 1 && (
+                        <polyline fill="none" stroke="#f59e0b" strokeWidth="2.5" points={poly} />
+                      )}
+                      {coords.map((c: any) => (
+                        <g key={c.idx}>
+                          <circle cx={c.x} cy={c.y} r="4.5" fill="#fbbf24" stroke="#0f172a" strokeWidth="1.5" />
+                          <text
+                            x={c.x}
+                            y={Math.max(14, c.y - 8)}
+                            textAnchor="middle"
+                            fill="#f8fafc"
+                            fontSize="9"
+                            fontFamily="monospace"
+                          >
+                            {(c.pd * 100).toFixed(1)}%
+                          </text>
+                          <text x={c.x} y={165} textAnchor="middle" fill="#94a3b8" fontSize="9" fontFamily="monospace">
+                            T{c.idx + 1}
+                          </text>
+                        </g>
+                      ))}
+                    </g>
+                  );
+                })()}
+              </svg>
+            </div>
+          )}
+
           <div className="space-y-3 font-mono text-xs">
             {timelineData?.assessment_timeline?.length > 0 ? (
               timelineData.assessment_timeline.map((item: any, idx: number) => (

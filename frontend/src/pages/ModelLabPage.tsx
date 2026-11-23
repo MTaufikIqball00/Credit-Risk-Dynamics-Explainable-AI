@@ -3,7 +3,7 @@ import { api } from '../api/client';
 import { Cpu, Play, CheckCircle2, BarChart3, Sliders, RefreshCw } from 'lucide-react';
 
 export const ModelLabPage: React.FC = () => {
-  const [algorithm, setAlgorithm] = useState<'LightGBM' | 'XGBoost'>('LightGBM');
+  const [algorithm, setAlgorithm] = useState<'LightGBM' | 'XGBoost' | 'Baseline_LogReg'>('LightGBM');
   const [learningRate, setLearningRate] = useState(0.05);
   const [nEstimators, setNEstimators] = useState(100);
   const [maxDepth, setMaxDepth] = useState(4);
@@ -71,6 +71,7 @@ export const ModelLabPage: React.FC = () => {
             >
               <option value="LightGBM">LightGBM (Gradient Boosting)</option>
               <option value="XGBoost">XGBoost (Extreme Boosting)</option>
+              <option value="Baseline_LogReg">Baseline_LogReg (Logistic Regression)</option>
             </select>
           </div>
 

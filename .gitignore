@@ -28,6 +28,10 @@ htmlcov/
 env/
 venv/
 
+# Environment secrets (preserve .env.example)
+.env
+.env.local
+
 # Runtime Logs & PIDs
 *.log
 .pids

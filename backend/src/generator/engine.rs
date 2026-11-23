@@ -43,6 +43,7 @@ impl SyntheticGenerator {
     ) -> GeneratedDataBundle {
         let mut rng = ChaCha8Rng::seed_from_u64(random_seed);
         let dataset_id = Uuid::new_v4().to_string();
+        let cohort_tag = dataset_id[..6].to_uppercase();
         let now = Utc::now();
 
         let data_dict = json!({
@@ -186,7 +187,7 @@ impl SyntheticGenerator {
             let account = SyntheticAccount {
                 id: account_id.clone(),
                 customer_id: customer_id.clone(),
-                account_number: format!("SYNTH-{:04}-{:04}", (i / 1000) + 10, i % 1000),
+                account_number: format!("SYNTH-{}-{:04}", cohort_tag, i + 1),
                 account_type: "Checking/Savings".to_string(),
                 current_balance: running_balance,
                 currency: "IDR".to_string(),
@@ -368,7 +369,7 @@ impl SyntheticGenerator {
             customers.push(SyntheticCustomer {
                 id: customer_id,
                 dataset_id: dataset_id.clone(),
-                customer_code: format!("CUST-{:05}", i + 1),
+                customer_code: format!("CUST-{}-{:05}", cohort_tag, i + 1),
                 simulation_profile: profile_str.to_string(),
                 employment_type: employment.to_string(),
                 monthly_income,

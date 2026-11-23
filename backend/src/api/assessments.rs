@@ -286,6 +286,14 @@ pub async fn review_assessment(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<ReviewRequest>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let justification = payload.justification.trim();
+    if justification.is_empty() {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            "Mandatory justification rationale cannot be empty or whitespace".to_string(),
+        ));
+    }
+
     let mut assessment: CreditAssessment =
         sqlx::query_as("SELECT * FROM credit_assessments WHERE id = ?")
             .bind(&assessment_id)
@@ -297,10 +305,11 @@ pub async fn review_assessment(
     let now = Utc::now().to_rfc3339();
     let review_id = Uuid::new_v4().to_string();
 
-    let new_status = if payload.action == "OVERRIDE" {
-        "OVERRIDDEN"
-    } else {
-        "REVIEWED_APPROVED"
+    let (new_status, audit_action) = match payload.action.trim().to_uppercase().as_str() {
+        "OVERRIDE" => ("OVERRIDDEN", "DECISION_OVERRIDDEN"),
+        "REQUEST_DATA" => ("DATA_REQUESTED", "REVIEW_DATA_REQUESTED"),
+        "ESCALATE" => ("ESCALATED", "REVIEW_ESCALATED"),
+        _ => ("REVIEWED_APPROVED", "REVIEW_CONFIRMED"),
     };
 
     // Store review record
@@ -316,7 +325,7 @@ pub async fn review_assessment(
     .bind(&payload.action)
     .bind(&assessment.recommendation)
     .bind(&payload.override_decision)
-    .bind(&payload.justification)
+    .bind(justification)
     .bind(&payload.audit_notes)
     .bind(&now)
     .execute(&state.pool)
@@ -328,7 +337,7 @@ pub async fn review_assessment(
         "UPDATE credit_assessments SET review_status = ?, reviewer_notes = ?, override_reason = ? WHERE id = ?"
     )
     .bind(new_status)
-    .bind(format!("{}: {}", payload.reviewer_role, payload.justification))
+    .bind(format!("{}: {}", payload.reviewer_role, justification))
     .bind(&payload.override_decision)
     .bind(&assessment_id)
     .execute(&state.pool)
@@ -340,12 +349,13 @@ pub async fn review_assessment(
     sqlx::query(
         r#"
         INSERT INTO audit_logs (id, action_type, entity_name, entity_id, details, actor, timestamp)
-        VALUES (?, 'DECISION_OVERRIDDEN', 'credit_assessments', ?, ?, ?, ?)
+        VALUES (?, ?, 'credit_assessments', ?, ?, ?, ?)
         "#
     )
     .bind(audit_id)
+    .bind(audit_action)
     .bind(&assessment_id)
-    .bind(json!({ "action": payload.action, "justification": payload.justification, "role": payload.reviewer_role }).to_string())
+    .bind(json!({ "action": payload.action, "new_review_status": new_status, "justification": justification, "role": payload.reviewer_role }).to_string())
     .bind(&payload.reviewer_role)
     .bind(&now)
     .execute(&state.pool)
@@ -359,6 +369,6 @@ pub async fn review_assessment(
         "review_id": review_id,
         "assessment_id": assessment_id,
         "new_review_status": new_status,
-        "justification": payload.justification
+        "justification": justification
     })))
 }

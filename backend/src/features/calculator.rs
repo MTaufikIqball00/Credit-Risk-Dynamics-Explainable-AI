@@ -103,12 +103,15 @@ impl FeatureCalculator {
         let expense_to_income_ratio = (monthly_expense / avg_monthly_income.max(1.0)).min(2.5);
 
         // Recurring payment consistency & utility regularity
-        let total_utils = utilities.len().max(1) as f64;
-        let on_time_utils = utilities
-            .iter()
-            .filter(|u| u.payment_status == "ON_TIME")
-            .count() as f64;
-        let utility_regularity_score = on_time_utils / total_utils;
+        let utility_regularity_score = if utilities.is_empty() {
+            0.5
+        } else {
+            let on_time_utils = utilities
+                .iter()
+                .filter(|u| u.payment_status == "ON_TIME")
+                .count() as f64;
+            on_time_utils / (utilities.len() as f64)
+        };
 
         let recurring_payment_consistency = if customer.credit_obligation_amount > 0.0 {
             let obligation_txs = transactions

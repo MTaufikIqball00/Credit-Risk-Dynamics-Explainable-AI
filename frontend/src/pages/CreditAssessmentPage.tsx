@@ -289,6 +289,8 @@ export const CreditAssessmentPage: React.FC<CreditAssessmentPageProps> = ({
                           ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
                           : a.review_status === 'REVIEWED_APPROVED'
                           ? 'bg-emerald-500/20 text-emerald-300'
+                          : a.review_status === 'DATA_REQUESTED'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                           : 'bg-slate-800 text-slate-400'
                       }`}
                     >

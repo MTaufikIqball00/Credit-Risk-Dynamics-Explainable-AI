@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Sidebar, NavItemKey } from './components/Sidebar';
 import { Header } from './components/Header';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { OverviewPage } from './pages/OverviewPage';
 import { SyntheticLabPage } from './pages/SyntheticLabPage';
 import { CustomerExplorerPage } from './pages/CustomerExplorerPage';
+import { FeatureEngineeringPage } from './pages/FeatureEngineeringPage';
 import { NlpIntelligencePage } from './pages/NlpIntelligencePage';
 import { CreditAssessmentPage } from './pages/CreditAssessmentPage';
 import { XaiWorkspacePage } from './pages/XaiWorkspacePage';
@@ -32,6 +34,10 @@ export const App: React.FC = () => {
     customer_explorer: {
       title: 'Synthetic Customer Explorer',
       subtitle: 'Deep profile inspection across 8 financial scenarios and longitudinal transaction series.',
+    },
+    feature_engineering: {
+      title: 'Behavioral Feature Engineering',
+      subtitle: 'Mathematical dictionary of 12 credit risk signals, profile distributions, and missing-value policies.',
     },
     nlp_intelligence: {
       title: 'Transaction NLP Intelligence',
@@ -86,7 +92,8 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
+    <ErrorBoundary>
+      <div className="flex h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
       {/* Sidebar */}
       <Sidebar currentNav={currentNav} onSelectNav={setCurrentNav} />
 
@@ -109,6 +116,7 @@ export const App: React.FC = () => {
               onSelectCustomerForAssessment={handleSelectCustomerForAssessment}
             />
           )}
+          {currentNav === 'feature_engineering' && <FeatureEngineeringPage />}
           {currentNav === 'nlp_intelligence' && <NlpIntelligencePage />}
           {currentNav === 'credit_assessment' && (
             <CreditAssessmentPage
@@ -129,5 +137,6 @@ export const App: React.FC = () => {
         </main>
       </div>
     </div>
+    </ErrorBoundary>
   );
 };

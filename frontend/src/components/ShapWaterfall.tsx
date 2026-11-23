@@ -8,11 +8,44 @@ interface ShapWaterfallProps {
   contributions: ShapContribution[];
 }
 
+function toSafeProbability(val: number): number {
+  if (!Number.isFinite(val)) return 0;
+  // If raw log-odds leaked in (outside [0, 1]), project via logistic sigmoid safely
+  if (val < 0 || val > 1) {
+    return 1 / (1 + Math.exp(-val));
+  }
+  return val;
+}
+
+function clampBarPct(pct: number): number {
+  if (!Number.isFinite(pct)) return 0;
+  return Math.max(0, Math.min(100, pct));
+}
+
+function formatProbabilityPct(prob: number): string {
+  const safe = clampBarPct(toSafeProbability(prob) * 100);
+  return `${safe.toFixed(1)}%`;
+}
+
+function formatDeltaPct(delta: number): string {
+  if (!Number.isFinite(delta)) return '0.0%';
+  const pct = delta * 100;
+  return pct >= 0 ? `+${pct.toFixed(1)}%` : `${pct.toFixed(1)}%`;
+}
+
 export const ShapWaterfall: React.FC<ShapWaterfallProps> = ({
   baseValue,
   finalPd,
   contributions,
 }) => {
+  const safeBaseProb = toSafeProbability(baseValue);
+  const safeFinalProb = toSafeProbability(finalPd);
+  const isRawLogOdds = baseValue < 0 || baseValue > 1;
+  const maxAbsContr = Math.max(
+    0.05,
+    ...contributions.map((c) => Math.abs(Number.isFinite(c.contribution) ? c.contribution : 0))
+  );
+
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
       <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
@@ -20,7 +53,7 @@ export const ShapWaterfall: React.FC<ShapWaterfallProps> = ({
           <h3 className="text-sm font-bold text-white flex items-center gap-2">
             SHAP Waterfall Local Attribution Plot
             <span className="text-[10px] px-2 py-0.5 rounded bg-brand-500/20 text-brand-300 font-mono">
-              TreeExplainer
+              TreeExplainer • Probability Space
             </span>
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -47,17 +80,19 @@ export const ShapWaterfall: React.FC<ShapWaterfallProps> = ({
           <div className="flex-1 bg-slate-800 h-2.5 rounded-full overflow-hidden">
             <div
               className="bg-slate-400 h-full rounded-full transition-all"
-              style={{ width: `${Math.min(baseValue * 100, 100)}%` }}
+              style={{ width: `${clampBarPct(safeBaseProb * 100)}%` }}
             ></div>
           </div>
-          <span className="w-20 text-right font-bold text-slate-200">{(baseValue * 100).toFixed(1)}%</span>
+          <span className="w-20 text-right font-bold text-slate-200">
+            {formatProbabilityPct(safeBaseProb)}
+          </span>
         </div>
 
         {/* Feature Contribution Bars */}
         {contributions.map((c, idx) => {
-          const isRiskUp = c.direction === 'INCREASES_RISK';
-          const absContr = Math.abs(c.contribution);
-          const barWidth = Math.min(absContr * 180, 100);
+          const isRiskUp = c.direction === 'INCREASES_RISK' || c.contribution > 0;
+          const absContr = Math.abs(Number.isFinite(c.contribution) ? c.contribution : 0);
+          const barWidth = clampBarPct((absContr / maxAbsContr) * 100);
 
           return (
             <div
@@ -100,7 +135,9 @@ export const ShapWaterfall: React.FC<ShapWaterfallProps> = ({
                   isRiskUp ? 'text-rose-400' : 'text-emerald-400'
                 }`}
               >
-                {c.contribution > 0 ? `+${(c.contribution * 100).toFixed(1)}%` : `${(c.contribution * 100).toFixed(1)}%`}
+                {isRawLogOdds
+                  ? `${c.contribution >= 0 ? '+' : ''}${c.contribution.toFixed(3)}`
+                  : formatDeltaPct(c.contribution)}
               </span>
             </div>
           );
@@ -112,13 +149,17 @@ export const ShapWaterfall: React.FC<ShapWaterfallProps> = ({
           <div className="flex-1 bg-slate-800 h-3 rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${
-                finalPd > 0.35 ? 'bg-rose-500' : finalPd > 0.15 ? 'bg-amber-500' : 'bg-emerald-500'
+                safeFinalProb > 0.35
+                  ? 'bg-rose-500'
+                  : safeFinalProb > 0.12
+                  ? 'bg-amber-500'
+                  : 'bg-emerald-500'
               }`}
-              style={{ width: `${Math.min(finalPd * 100, 100)}%` }}
+              style={{ width: `${clampBarPct(safeFinalProb * 100)}%` }}
             ></div>
           </div>
           <span className="w-20 text-right text-sm font-extrabold text-brand-200">
-            {(finalPd * 100).toFixed(1)}%
+            {formatProbabilityPct(safeFinalProb)}
           </span>
         </div>
       </div>

@@ -1,4 +1,4 @@
-use sqlx::sqlite::{SqliteConnectOptions, SqlitePool, SqlitePoolOptions};
+use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePool, SqlitePoolOptions};
 use std::fs;
 use std::path::Path;
 use std::str::FromStr;
@@ -13,7 +13,7 @@ pub async fn init_pool(
             .trim_start_matches("sqlite://")
             .split('?')
             .next()
-            .unwrap_or("credit_risk.db");
+            .unwrap_or("data/credit_risk.db");
         if let Some(parent) = Path::new(file_path).parent() {
             if !parent.as_os_str().is_empty() {
                 fs::create_dir_all(parent)?;
@@ -21,14 +21,17 @@ pub async fn init_pool(
         }
     }
 
-    let connection_options = SqliteConnectOptions::from_str(database_url)?.create_if_missing(true);
+    let connection_options = SqliteConnectOptions::from_str(database_url)?
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .foreign_keys(true);
 
     let pool = SqlitePoolOptions::new()
         .max_connections(10)
         .connect_with(connection_options)
         .await?;
 
-    info!("Connected to SQLite database at {}", database_url);
+    info!("Connected to SQLite database (WAL + FK ON) at {}", database_url);
 
     // Run migrations directly
     let migration_sql = include_str!("../../migrations/20261104_init.sql");

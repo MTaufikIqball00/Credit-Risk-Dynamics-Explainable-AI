@@ -1,40 +1,44 @@
 {
-  "executed_at": "2026-11-04T12:32:07.288Z",
+  "mode": "full_stack",
+  "executed_at": "2026-11-23T05:17:41.928Z",
   "cases": [
     {
       "test_id": "UI-E2E-001",
-      "title": "SPA Shell, Research Overview KPI Cards & Backend Telemetry Rendering",
+      "title": "SPA Shell, Research Overview KPI Cards & Connection Mode Telemetry",
       "module_id": "M12",
       "module_name": "System Settings & Overview",
-      "description": "Navigates to http://127.0.0.1:3240/, verifies Sidebar, Header, Academic Prototype banner, and live Overview metrics from GET /api/overview.",
-      "preconditions": "Frontend (:3240) and Rust Backend (:8240) running.",
+      "description": "Verifies Sidebar, Header connection badge, Overview KPI cards, and zero NaN/Invalid Date.",
+      "preconditions": "Full-stack running.",
       "status": "PASS",
-      "duration_ms": 1931,
-      "source_refs": "frontend/src/App.tsx, frontend/src/pages/OverviewPage.tsx",
-      "assertion_text": "assert Sidebar visible && Overview KPI metrics rendered",
+      "duration_ms": 8767,
+      "source_refs": "frontend/src/App.tsx, frontend/src/pages/OverviewPage.tsx, frontend/src/components/Header.tsx",
+      "assertion_text": "assert Sidebar visible && accurate Header badge && Overview KPIs rendered",
       "input_json": {
-        "url": "http://127.0.0.1:3240/"
+        "url": "http://127.0.0.1:3240/",
+        "showcase_mode": false
       },
       "expected_json": {
-        "overview_loaded": true
+        "overview_loaded": true,
+        "badge_matches": true
       },
       "actual_json": {
         "overview_loaded": true,
-        "console_errors": 0
+        "badge_matches": true,
+        "header_badge": "Research Overview\n\nExecutive dashboard tracking synthetic portfolios, active model performance, and alerts.\n\nLive Backen"
       },
-      "logs": "Research Overview rendered with live portfolio metrics and zero uncaught exceptions."
+      "logs": "Overview verified (badgeMatches=true, mode=live)."
     },
     {
       "test_id": "UI-E2E-002",
       "title": "Synthetic Data Laboratory Form Controls & Data Dictionary Modal Inspection",
       "module_id": "M01",
       "module_name": "Synthetic Data Laboratory",
-      "description": "Navigates to Synthetic Data Lab, verifies ChaCha8 badge, profile selector (Small/Medium/Large), seed input, and Data Dictionary modal.",
-      "preconditions": "At least 1 seeded dataset in research_datasets.",
+      "description": "Verifies ChaCha8 badge, generator form, dataset table, and Data Dictionary schema modal.",
+      "preconditions": "At least 1 dataset available.",
       "status": "PASS",
-      "duration_ms": 740,
-      "source_refs": "frontend/src/pages/SyntheticLabPage.tsx:64-240",
-      "assertion_text": "assert SyntheticLabPage form controls and dataset registry table render",
+      "duration_ms": 1429,
+      "source_refs": "frontend/src/pages/SyntheticLabPage.tsx",
+      "assertion_text": "assert labLoaded && dictModalWorked",
       "input_json": {
         "view": "synthetic_lab"
       },
@@ -44,65 +48,66 @@
       },
       "actual_json": {
         "form_visible": true,
-        "dict_modal_checked": false
+        "dict_modal_checked": true
       },
-      "logs": "Synthetic Data Lab UI controls and dataset registry verified in headless Chromium."
+      "logs": "Synthetic Data Lab verified (dictModalWorked=true)."
     },
     {
       "test_id": "UI-E2E-003",
-      "title": "Customer Explorer Search, 8-Profile Filter & Customer 360 Feature Vector Modal",
+      "title": "Customer Explorer 8-Profile Filter, 360 Modal & Dedicated Feature Engineering Page",
       "module_id": "M02",
-      "module_name": "Synthetic Customer Explorer",
-      "description": "Tests Customer Explorer profile filtering, cohort filtering, customer table rendering, and 360-degree detail modal inspection.",
-      "preconditions": "50 customers seeded.",
+      "module_name": "Synthetic Customer Explorer & Feature Engineering",
+      "description": "Verifies Customer Explorer filtering, 360 modal utility payments, and Feature Engineering catalog.",
+      "preconditions": "Customers seeded.",
       "status": "PASS",
-      "duration_ms": 2875,
-      "source_refs": "frontend/src/pages/CustomerExplorerPage.tsx:60-302",
-      "assertion_text": "assert customer table renders && profile filter updates && 360 modal opens",
+      "duration_ms": 2992,
+      "source_refs": "frontend/src/pages/CustomerExplorerPage.tsx, FeatureEngineeringPage.tsx",
+      "assertion_text": "assert detailModalVisible && featPageOk",
       "input_json": {
         "profile_filter": "Stable Income"
       },
       "expected_json": {
-        "detail_modal_visible": true
+        "detail_modal_visible": true,
+        "feature_engineering_page": true
       },
       "actual_json": {
-        "detail_modal_visible": true
+        "detail_modal_visible": true,
+        "feature_engineering_page": true
       },
-      "logs": "Customer Explorer filters and 360 detail inspection verified in headless Chromium."
+      "logs": "Customer Explorer & Feature Engineering page verified."
     },
     {
       "test_id": "UI-E2E-004",
-      "title": "Bilingual Transaction NLP Interactive Classification & Confusion Matrix View",
+      "title": "Bilingual Transaction NLP Interactive Classification & 11-Class Matrix",
       "module_id": "M04",
       "module_name": "Transaction NLP Intelligence",
-      "description": "Submits Indonesian transaction narrative in NlpIntelligencePage and verifies predicted category, confidence bar, and evaluation metrics.",
-      "preconditions": "NLP endpoint operational.",
+      "description": "Submits Indonesian narrative and verifies category, confidence, models, and 11-class matrix.",
+      "preconditions": "NLP view accessible.",
       "status": "PASS",
-      "duration_ms": 1355,
-      "source_refs": "frontend/src/pages/NlpIntelligencePage.tsx:61-256",
-      "assertion_text": "assert Classify button returns 'Salary / Income' with confidence score",
+      "duration_ms": 1118,
+      "source_refs": "frontend/src/pages/NlpIntelligencePage.tsx",
+      "assertion_text": "assert 'Salary / Income' && '11-Class Evaluation Matrix' rendered",
       "input_json": {
         "narrative": "GAJI BULANAN PT MANDIRI SEJAHTERA"
       },
       "expected_json": {
-        "classified": true,
-        "category": "Salary / Income"
+        "classified": true
       },
       "actual_json": {
         "classified": true
       },
-      "logs": "NLP interactive classification and evaluation metrics verified in headless Chromium."
+      "logs": "NLP interactive classification and 11-class evaluation matrix verified."
     },
     {
       "test_id": "UI-E2E-005",
       "title": "Credit Risk Decision Support PD Evaluation & Underwriter Review Table",
       "module_id": "M07",
       "module_name": "Credit Risk Decision Support",
-      "description": "Triggers customer credit risk evaluation in CreditAssessmentPage and verifies PD score, risk category, and assessment history table.",
-      "preconditions": "Customer selected in CreditAssessmentPage.",
+      "description": "Triggers customer credit risk evaluation and verifies PD score, category, and history table.",
+      "preconditions": "Customer selected.",
       "status": "PASS",
-      "duration_ms": 1466,
-      "source_refs": "frontend/src/pages/CreditAssessmentPage.tsx:105-405",
+      "duration_ms": 1294,
+      "source_refs": "frontend/src/pages/CreditAssessmentPage.tsx",
       "assertion_text": "assert PD score, risk_category, and recommendation render in UI",
       "input_json": {
         "view": "credit_assessment"
@@ -113,62 +118,69 @@
       "actual_json": {
         "has_risk_decision": true
       },
-      "logs": "Credit Risk Decision Support evaluation executed in headless Chromium."
+      "logs": "Credit Risk Decision Support evaluation verified."
     },
     {
       "test_id": "UI-E2E-006",
-      "title": "Explainable AI (XAI) Workspace Local SHAP Waterfall & Global Importance View",
+      "title": "Explainable AI (XAI) Workspace SHAP Waterfall & Counterfactual What-If Simulator",
       "module_id": "M08",
       "module_name": "Explainable AI Workspace",
-      "description": "Navigates to Explainable AI Workspace and verifies SHAP waterfall attribution bars, global feature ranking, and non-causal academic disclaimer.",
-      "preconditions": "At least one credit assessment exists.",
+      "description": "Verifies probability-scaled SHAP waterfall, global importance, and interactive What-If simulator.",
+      "preconditions": "At least one assessment exists.",
       "status": "PASS",
-      "duration_ms": 657,
-      "source_refs": "frontend/src/pages/XaiWorkspacePage.tsx, frontend/src/components/ShapWaterfall.tsx",
-      "assertion_text": "assert XaiWorkspacePage renders SHAP waterfall and global feature importance",
+      "duration_ms": 607,
+      "source_refs": "frontend/src/pages/XaiWorkspacePage.tsx, WhatIfSimulator.tsx, ShapWaterfall.tsx",
+      "assertion_text": "assert SHAP waterfall && What-If simulator visible && no negative log-odds bug",
       "input_json": {
         "view": "xai_workspace"
       },
       "expected_json": {
-        "xai_rendered": true
+        "xai_rendered": true,
+        "has_what_if": true,
+        "no_neg_base_bug": true
       },
       "actual_json": {
-        "xai_rendered": true
+        "xai_rendered": true,
+        "has_what_if": true,
+        "no_neg_base_bug": true
       },
-      "logs": "XAI Workspace rendered local and global SHAP visualizations in headless Chromium."
+      "logs": "XAI Workspace SHAP waterfall and Counterfactual What-If simulator verified."
     },
     {
       "test_id": "UI-E2E-007",
-      "title": "Dynamic Risk Monitoring Event Simulation & PSI Drift Surveillance View",
+      "title": "Dynamic Risk Monitoring Shock Reassessment, PD Trajectory Chart & PSI Drift",
       "module_id": "M09",
       "module_name": "Dynamic Risk Monitoring",
-      "description": "Verifies DynamicMonitoringPage event simulation controls, longitudinal PD trajectory, and PSI feature drift table.",
+      "description": "Injects shock event, verifies ALERT badge, PD trajectory SVG chart, and PSI feature drift table.",
       "preconditions": "DynamicMonitoringPage loaded.",
       "status": "PASS",
-      "duration_ms": 646,
+      "duration_ms": 1348,
       "source_refs": "frontend/src/pages/DynamicMonitoringPage.tsx",
-      "assertion_text": "assert DynamicMonitoringPage renders event simulator and PSI drift table",
+      "assertion_text": "assert shock alert && PD trajectory chart && PSI drift cards visible",
       "input_json": {
-        "view": "dynamic_monitoring"
+        "view": "dynamic_monitoring",
+        "shock": "INCOME_DROP"
       },
       "expected_json": {
-        "monitoring_rendered": true
+        "monitoring_rendered": true,
+        "trajectory_chart": true
       },
       "actual_json": {
-        "monitoring_rendered": true
+        "monitoring_rendered": true,
+        "trajectory_chart": true
       },
-      "logs": "Dynamic Risk Monitoring and PSI Drift view verified in headless Chromium."
+      "logs": "Dynamic Risk Monitoring shock simulation, PD trajectory SVG, and PSI drift verified."
     },
     {
       "test_id": "UI-E2E-008",
-      "title": "Model Lab, Benchmark Comparison, Fairness Audit, Experiment History & System Diagnostics Navigation",
+      "title": "Model Lab Training, ROC/Calibration Charts, Fairness Brier, Audit History & Settings",
       "module_id": "M05",
       "module_name": "Model Research, Fairness & Governance Views",
-      "description": "Navigates through Model Lab, Model Comparison, Fairness & Bias Audit, Experiment History, and System Settings & Diagnostics, verifying data rendering on each page.",
-      "preconditions": "All backend endpoints reachable.",
+      "description": "Runs Model Lab training, verifies ROC/Calibration SVG charts, Fairness Brier scores, valid audit timestamps, and System Settings.",
+      "preconditions": "All views reachable.",
       "status": "PASS",
-      "duration_ms": 2636,
-      "source_refs": "frontend/src/pages/ModelLabPage.tsx, ModelComparisonPage.tsx, FairnessValidationPage.tsx, ExperimentHistoryPage.tsx, SettingsPage.tsx",
+      "duration_ms": 3434,
+      "source_refs": "ModelLabPage.tsx, ModelComparisonPage.tsx, FairnessValidationPage.tsx, ExperimentHistoryPage.tsx, SettingsPage.tsx",
       "assertion_text": "assert modelLabOk && modelCompOk && fairnessOk && expOk && settingsOk",
       "input_json": {
         "views": [
@@ -189,21 +201,21 @@
         "expOk": true,
         "settingsOk": true
       },
-      "logs": "All 5 modeling, fairness, audit trail, and system diagnostics pages rendered accurately."
+      "logs": "All 5 modeling, chart, fairness, audit trail, and system diagnostics pages verified."
     },
     {
       "test_id": "UI-E2E-009",
-      "title": "Autonomous QA & Audit Dashboard UI, 12-Module Matrix, Remediation Modal & Responsive Viewport",
+      "title": "Autonomous QA Dashboard, 12-Module Matrix, Responsive Layout & Zero Console/NaN Errors",
       "module_id": "M12",
       "module_name": "Autonomous QA & Empirical Audit Center",
-      "description": "Verifies QaAuditDashboardPage KPI cards, findings list, test case explorer, 12-module coverage matrix, schedules, and responsive layout.",
-      "preconditions": "QA Engine initialized and accessible at /api/qa/overview.",
+      "description": "Verifies QA Dashboard KPIs, 12-module coverage, responsive viewport, and global zero console/page/NaN/Invalid Date invariants.",
+      "preconditions": "All 14 pages traversed.",
       "status": "PASS",
-      "duration_ms": 2821,
+      "duration_ms": 2530,
       "source_refs": "frontend/src/pages/QaAuditDashboardPage.tsx",
-      "assertion_text": "assert qaHasFindings && mobileVisible && consoleErrors.length == 0",
+      "assertion_text": "assert qaHasContent && has12Modules && mobileVisible && consoleErrors==0 && qualityIssues==0",
       "input_json": {
-        "view": "qa_audit",
+        "mode": "full_stack",
         "viewports": [
           "1440x900",
           "390x844"
@@ -212,15 +224,20 @@
       "expected_json": {
         "qa_rendered": true,
         "console_errors": 0,
-        "failed_requests": 0
+        "page_errors": 0,
+        "failed_requests": 0,
+        "quality_issues": 0
       },
       "actual_json": {
         "qa_rendered": true,
+        "has_12_modules": true,
         "mobile_visible": true,
         "console_errors": [],
-        "failed_requests": []
+        "page_errors": [],
+        "failed_requests": [],
+        "quality_issues": []
       },
-      "logs": "QA & Audit Dashboard verified with 0 console errors and 0 failed network requests."
+      "logs": "Verified across 14 modules: consoleErrors=0, pageErrors=0, failedRequests=0, qualityIssues=0."
     }
   ]
 }

@@ -19,7 +19,7 @@ import {
   Eye,
   Layers,
 } from 'lucide-react';
-import { api } from '../api/client';
+import { api, generateShowcaseQaReport, isShowcaseMode } from '../api/client';
 
 export const QaAuditDashboardPage: React.FC = () => {
   const [overview, setOverview] = useState<any>(null);
@@ -103,7 +103,9 @@ export const QaAuditDashboardPage: React.FC = () => {
   useEffect(() => {
     loadAll(false);
     const timer = setInterval(() => {
-      loadAll(true);
+      if (!isShowcaseMode()) {
+        loadAll(true);
+      }
     }, 5000);
     return () => clearInterval(timer);
   }, []);
@@ -215,6 +217,19 @@ export const QaAuditDashboardPage: React.FC = () => {
 
   const downloadReport = (format: 'json' | 'csv' | 'markdown') => {
     const rid = selectedRunId || overview?.latest_run?.id || '';
+    if (isShowcaseMode()) {
+      const report = generateShowcaseQaReport(format, rid);
+      const blob = new Blob([report.content], { type: report.mimeType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = report.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      return;
+    }
     window.open(
       `/api/qa/reports/export?run_id=${encodeURIComponent(rid)}&format=${format}`,
       '_blank'

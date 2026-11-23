@@ -3,6 +3,7 @@ import { api } from '../api/client';
 import { CreditAssessment } from '../types';
 import { Sparkles, HelpCircle, Layers, BarChart3, AlertCircle } from 'lucide-react';
 import { ShapWaterfall } from '../components/ShapWaterfall';
+import { WhatIfSimulator } from '../components/WhatIfSimulator';
 
 interface XaiWorkspacePageProps {
   initialAssessmentId?: string;
@@ -152,10 +153,15 @@ export const XaiWorkspacePage: React.FC<XaiWorkspacePageProps> = ({
               </div>
 
               <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-[11px] text-slate-500 font-mono mt-4">
-                Assessed Model: {shapData.model_version} | Base Value: {shapData.base_value}
+                Assessed Model: {shapData.model_version} | Base Expectation: {(Math.max(0, Math.min(1, Number(shapData.base_value) || 0)) * 100).toFixed(1)}%
               </div>
             </div>
           </div>
+
+          <WhatIfSimulator
+            initialFeatures={shapData.feature_snapshot || undefined}
+            baselinePd={shapData.probability_of_default}
+          />
         </div>
       )}
     </div>

@@ -190,6 +190,10 @@ impl IsolatedTestEnv {
             host: "127.0.0.1".to_string(),
             database_url: db_url,
             ml_service_url: ml_service_url.to_string(),
+            cors_allowed_origins: vec![
+                "http://localhost:3240".to_string(),
+                "http://127.0.0.1:3240".to_string(),
+            ],
             environment: "qa_isolated_test".to_string(),
         };
         let state = Arc::new(AppState {

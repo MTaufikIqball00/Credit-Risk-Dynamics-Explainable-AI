@@ -20,7 +20,7 @@ use super::{
 const DOCUMENTED_MODULES: &[(&str, &str, &str)] = &[
     ("M01", "1. Synthetic Data Laboratory", "IMPLEMENTED"),
     ("M02", "2. Synthetic Customer Explorer", "IMPLEMENTED"),
-    ("M03", "3. Feature Engineering", "PARTIAL_EMBEDDED"),
+    ("M03", "3. Feature Engineering", "IMPLEMENTED"),
     ("M04", "4. Transaction NLP Intelligence", "IMPLEMENTED"),
     ("M05", "5. Model Research Laboratory", "IMPLEMENTED"),
     ("M06", "6. Model Benchmark Comparison", "IMPLEMENTED"),

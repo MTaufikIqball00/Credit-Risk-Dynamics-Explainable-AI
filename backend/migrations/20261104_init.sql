@@ -305,3 +305,16 @@ CREATE INDEX IF NOT EXISTS idx_features_customer ON feature_snapshots(customer_i
 CREATE INDEX IF NOT EXISTS idx_assessments_customer ON credit_assessments(customer_id);
 CREATE INDEX IF NOT EXISTS idx_monitoring_customer ON monitoring_events(customer_id);
 CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs(action_type);
+
+-- Immutability triggers on audit_logs (technical enforcement against UPDATE/DELETE tampering)
+CREATE TRIGGER IF NOT EXISTS trg_audit_logs_prevent_update
+BEFORE UPDATE ON audit_logs
+BEGIN
+    SELECT RAISE(ABORT, 'audit_logs is immutable: UPDATE is forbidden');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_audit_logs_prevent_delete
+BEFORE DELETE ON audit_logs
+BEGIN
+    SELECT RAISE(ABORT, 'audit_logs is immutable: DELETE is forbidden');
+END;

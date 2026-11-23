@@ -103,7 +103,7 @@ export interface CreditAssessment {
   recommendation: 'APPROVE_SUPPORTED' | 'REVIEW_RECOMMENDED' | 'CAUTION_FLAGGED';
   uncertainty_score: number;
   data_completeness: number;
-  review_status: 'PENDING_REVIEW' | 'REVIEWED_APPROVED' | 'REVIEWED_REJECTED' | 'OVERRIDDEN';
+  review_status: 'PENDING_REVIEW' | 'REVIEWED_APPROVED' | 'REVIEWED_REJECTED' | 'OVERRIDDEN' | 'DATA_REQUESTED' | 'ESCALATED';
   reviewer_notes?: string;
   override_reason?: string;
   assessed_at: string;

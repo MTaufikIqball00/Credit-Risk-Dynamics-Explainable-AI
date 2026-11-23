@@ -14,12 +14,14 @@ import {
   Settings,
   Flame,
   CheckCircle2,
+  Sliders,
 } from 'lucide-react';
 
 export type NavItemKey =
   | 'overview'
   | 'synthetic_lab'
   | 'customer_explorer'
+  | 'feature_engineering'
   | 'nlp_intelligence'
   | 'credit_assessment'
   | 'xai_workspace'
@@ -41,6 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentNav, onSelectNav }) => 
     { key: 'overview', label: 'Research Overview', icon: BarChart3, badge: 'Live' },
     { key: 'synthetic_lab', label: 'Synthetic Data Lab', icon: Database, badge: 'Deterministic' },
     { key: 'customer_explorer', label: 'Customer Explorer', icon: Users, badge: 'Profiles' },
+    { key: 'feature_engineering', label: 'Feature Engineering', icon: Sliders, badge: '12 Signals' },
     { key: 'nlp_intelligence', label: 'Transaction NLP', icon: MessageSquareText, badge: 'IndoFin' },
     { key: 'credit_assessment', label: 'Credit Risk Decision', icon: ShieldAlert, badge: 'PD Engine' },
     { key: 'xai_workspace', label: 'Explainable AI (XAI)', icon: Sparkles, badge: 'SHAP' },
